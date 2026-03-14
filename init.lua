@@ -26,7 +26,9 @@ dofile(MP.."/display_node.lua")
 dofile(MP.."/privileges.lua")
 dofile(MP.."/utils.lua")
 dofile(MP.."/disable_global.lua")
-dofile(MP.."/awards.lua")
+if core.get_modpath("awards") then
+	dofile(MP.."/awards.lua")
+end
 dofile(MP.."/display_item.lua")
 dofile(MP.."/functions.lua")
 dofile(MP.."/inventory_helpers.lua")
