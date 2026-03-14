@@ -14,14 +14,14 @@
 -- A full-featured, fully-integrated vendor mod for Minetest
 
 fancy_vend = {
-	display_node = (minetest.settings:get("fancy_vend.display_node") or "default:obsidian_glass"),
-	max_logs = (tonumber(minetest.settings:get("fancy_vend.log_max")) or 40),
-	autorotate_speed = (tonumber(minetest.settings:get("fancy_vend.autorotate_speed")) or 1),
-	no_alerts = minetest.settings:get_bool("fancy_vend.no_alerts"),
+	display_node = (core.settings:get("fancy_vend.display_node") or "default:obsidian_glass"),
+	max_logs = (tonumber(core.settings:get("fancy_vend.log_max")) or 40),
+	autorotate_speed = (tonumber(core.settings:get("fancy_vend.autorotate_speed")) or 1),
+	no_alerts = core.settings:get_bool("fancy_vend.no_alerts"),
 	drop_vendor = "fancy_vend:player_vendor"
 }
 
-local MP = minetest.get_modpath("fancy_vend")
+local MP = core.get_modpath("fancy_vend")
 dofile(MP.."/display_node.lua")
 dofile(MP.."/privileges.lua")
 dofile(MP.."/utils.lua")
