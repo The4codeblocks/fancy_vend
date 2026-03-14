@@ -1,7 +1,7 @@
 
 -- Register a copy of the display node with no drops to make players separating
 -- the obsidian glass with something like a piston a non-issue.
-local display_node_def = table.copy(minetest.registered_nodes[fancy_vend.display_node])
+local display_node_def = table.copy(core.registered_nodes[fancy_vend.display_node])
 
 display_node_def.drop = ""
 display_node_def.pointable = false
@@ -16,11 +16,11 @@ if pipeworks then
 	}
 end
 
-minetest.register_node("fancy_vend:display_node", display_node_def)
+core.register_node("fancy_vend:display_node", display_node_def)
 
 
 -- LBM to refresh entities after clearobjects
-minetest.register_lbm({
+core.register_lbm({
 	label = "Refresh vendor display",
 	name = "fancy_vend:display_refresh",
 	nodenames = {"fancy_vend:display_node"},
