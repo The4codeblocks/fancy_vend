@@ -1,6 +1,6 @@
 
 -- Awards
-if minetest.get_modpath("awards") then
+if core.get_modpath("awards") then
 	awards.register_award("fancy_vend:getting_fancy", {
 		title = "Getting Fancy",
 		description = "Craft a fancy vendor.",
