@@ -1,8 +1,8 @@
 
 function fancy_vend.swap_vendor(pos, vendor_type)
-	local node = minetest.get_node(pos)
+	local node = core.get_node(pos)
 	node.name = vendor_type
-	minetest.swap_node(pos, node)
+	core.swap_node(pos, node)
 end
 
 function fancy_vend.get_correct_vendor(settings)
@@ -37,13 +37,13 @@ function fancy_vend.is_vendor(name)
 end
 
 function fancy_vend.refresh_vendor(pos)
-	local node = minetest.get_node(pos)
+	local node = core.get_node(pos)
 	if node.name:split(":")[1] ~= "fancy_vend" then
 		return false, "not a vendor"
 	end
 
 	local settings = fancy_vend.get_vendor_settings(pos)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local status, errorcode = fancy_vend.get_vendor_status(pos)
 	local correct_vendor = fancy_vend.get_correct_vendor(settings)
 
@@ -63,7 +63,7 @@ function fancy_vend.refresh_vendor(pos)
 
 		if meta:get_string("configured") == "" then
 			meta:set_string("configured", "true")
-			if minetest.get_modpath("awards") then
+			if core.get_modpath("awards") then
 				local name = meta:get_string("owner")
 				local data = awards.player(name)
 
@@ -124,8 +124,8 @@ function fancy_vend.refresh_vendor(pos)
 		end
 
 		if not status and errorcode == "no_room" then
-			minetest.chat_send_player(meta:get_string("owner"),
-				"[Fancy_Vend]: Error with vendor at "..minetest.pos_to_string(pos, 0)..
+			core.chat_send_player(meta:get_string("owner"),
+				"[Fancy_Vend]: Error with vendor at "..core.pos_to_string(pos, 0)..
 				": does not have room for payment."
 			)
 			meta:set_string("alerted", "true")
