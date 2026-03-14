@@ -8,8 +8,8 @@ end
 
 
 function fancy_vend.set_vendor_settings(pos, SettingsDef)
-	local meta = minetest.get_meta(pos)
-	meta:set_string("settings", minetest.serialize(SettingsDef))
+	local meta = core.get_meta(pos)
+	meta:set_string("settings", core.serialize(SettingsDef))
 end
 
 function fancy_vend.reset_vendor_settings(pos)
@@ -36,8 +36,8 @@ function fancy_vend.reset_vendor_settings(pos)
 end
 
 function fancy_vend.get_vendor_settings(pos)
-	local meta = minetest.get_meta(pos)
-	local settings = minetest.deserialize(meta:get_string("settings"))
+	local meta = core.get_meta(pos)
+	local settings = core.deserialize(meta:get_string("settings"))
 	if not settings then
 		return fancy_vend.reset_vendor_settings(pos)
 	else
@@ -74,24 +74,24 @@ function fancy_vend.can_buy_from_vendor(pos, player)
 end
 
 function fancy_vend.can_modify_vendor(pos, player)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local is_owner = false
 	if meta:get_string("owner") == player:get_player_name() or
-		minetest.check_player_privs(player, {protection_bypass = true}) then
+		core.check_player_privs(player, {protection_bypass = true}) then
 		is_owner = true
 	end
 	return is_owner
 end
 
 function fancy_vend.can_dig_vendor(pos, player)
-	local inv = minetest.get_meta(pos):get_inventory()
+	local inv = core.get_meta(pos):get_inventory()
 	return inv:is_empty("main") and fancy_vend.can_modify_vendor(pos, player)
 end
 
 function fancy_vend.can_access_vendor_inv(player, pos)
 	local player_name = player:get_player_name()
-	local meta = minetest.get_meta(pos)
-	if minetest.check_player_privs(player, {protection_bypass = true}) or
+	local meta = core.get_meta(pos)
+	if core.check_player_privs(player, {protection_bypass = true}) or
 		meta:get_string("owner") == player_name then
 		return true
 	end
