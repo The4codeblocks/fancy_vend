@@ -60,7 +60,7 @@ function fancy_vend.inv_insert(inv, listname, itemstack, quantity, from_table, p
 	table.insert(stacks, {name = name, count = remaining_quantity})
 
 	 -- If tool add wears ignores if from_table = nil (eg, due to vendor beig admin vendor)
-	if minetest.registered_tools[name] and from_table then
+	if core.registered_tools[name] and from_table then
 		for i in pairs(stacks) do
 			local from_item_table = from_table[i].item:to_table()
 			stacks[i].wear = from_item_table.wear
@@ -90,8 +90,8 @@ function fancy_vend.inv_insert(inv, listname, itemstack, quantity, from_table, p
 	if input_eject and pos then
 		local pos_under = vector.new(pos)
 		pos_under.y = pos_under.y - 1
-		local node_under = minetest.get_node(pos_under)
-		if minetest.get_item_group(node_under.name, "tubedevice") > 0 then
+		local node_under = core.get_node(pos_under)
+		if core.get_item_group(node_under.name, "tubedevice") > 0 then
 			output_tube_connected = true
 		end
 		if node_under.name == "hopper:hopper" or node_under.name == "hopper:hopper_side" then
@@ -105,13 +105,13 @@ function fancy_vend.inv_insert(inv, listname, itemstack, quantity, from_table, p
 				pos,
 				vector.new(0, -1, 0),
 				stacks[i],
-				minetest.get_meta(pos):get_string("owner")
+				core.get_meta(pos):get_string("owner")
 			)
 		else
 			local leftovers = ItemStack(stacks[i])
 			if output_hopper_connected then
 				local pos_under = {x = pos.x, y = pos.y-1, z = pos.z}
-				local hopper_inv = minetest.get_meta(pos_under):get_inventory()
+				local hopper_inv = core.get_meta(pos_under):get_inventory()
 				leftovers = hopper_inv:add_item("main", leftovers)
 			end
 			if not leftovers:is_empty() then
@@ -141,7 +141,7 @@ function fancy_vend.inv_contains_items(inv, listname, itemstring, quantity, igno
 	for i = 1,inv:get_size(listname) do
 		local stack = inv:get_stack(listname, i)
 		if stack:get_name() == itemstring then
-			if ignore_wear or (not minetest.registered_tools[itemstring] or stack:get_wear() == 0) then
+			if ignore_wear or (not core.registered_tools[itemstring] or stack:get_wear() == 0) then
 				count = count + stack:get_count()
 				table.insert(get_items, {id = i, item = stack})
 				if count >= minimum then
@@ -155,7 +155,7 @@ end
 
 function fancy_vend.run_inv_checks(pos, player, lots)
 	local settings = fancy_vend.get_vendor_settings(pos)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local inv = meta:get_inventory()
 	local player_inv = player:get_inventory()
 
