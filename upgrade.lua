@@ -3,7 +3,7 @@
 -- Vendor Upgrade System --
 ---------------------------
 
-local old_vendor_mods = string.split((minetest.setting_get("fancy_vend_old_vendor_mods") or ""), ",")
+local old_vendor_mods = string.split((core.setting_get("fancy_vend_old_vendor_mods") or ""), ",")
 local old_vendor_mods_table = {}
 
 for i in pairs(old_vendor_mods) do
@@ -28,17 +28,17 @@ local base_upgrade_template = {
 		return ItemStack(fancy_vend.drop_vendor.." "..itemstack:get_count())
 	end,
 	allow_metadata_inventory_move = function(pos, _, _, _, _, count, player)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		if player:get_player_name() ~= meta:get_string("owner") then return 0 end
 		return count
 	end,
 	allow_metadata_inventory_put = function(pos, _, _, stack, player)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		if player:get_player_name() ~= meta:get_string("owner") then return 0 end
 		return stack:get_count()
 	end,
 	allow_metadata_inventory_take = function(pos, _, _, stack, player)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		if player:get_player_name() ~= meta:get_string("owner") then return 0 end
 		return stack:get_count()
 	end,
@@ -50,20 +50,20 @@ if old_vendor_mods_table["currency"] then
 	local currency_template = table.copy(base_upgrade_template)
 
 	currency_template.can_dig = function(pos, player)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local inv = meta:get_inventory()
 		return inv:is_empty("stock") and
 			inv:is_empty("customers_gave") and
 			inv:is_empty("owner_wants") and
 			inv:is_empty("owner_gives") and
 			(meta:get_string("owner") == player:get_player_name() or
-			minetest.check_player_privs(player:get_player_name(), {protection_bypass = true}))
+			core.check_player_privs(player:get_player_name(), {protection_bypass = true}))
 	end
 	currency_template.on_rightclick = function(pos, _, clicker)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local list_name = "nodemeta:"..pos.x..","..pos.y..","..pos.z
 		if clicker:get_player_name() == meta:get_string("owner") then
-			minetest.show_formspec(clicker:get_player_name(),"fancy_vend:currency_shop_formspec",
+			core.show_formspec(clicker:get_player_name(),"fancy_vend:currency_shop_formspec",
 				"size[8,9.5]"..
 				"label[0,0;".."Customers gave:".."]"..
 				"list["..list_name..";customers_gave;0,0.5;3,2;]"..
@@ -78,7 +78,7 @@ if old_vendor_mods_table["currency"] then
 		end
 	end
 
-	minetest.register_node(":currency:shop", currency_template)
+	core.register_node(":currency:shop", currency_template)
 
 	table.insert(clear_craft_vendors, "currency:shop")
 end
@@ -86,7 +86,7 @@ end
 if old_vendor_mods_table["easyvend"] then
 	local nodes = {"easyvend:vendor", "easyvend:vendor_on", "easyvend:depositor", "easyvend:depositor_on"}
 	for i in pairs(nodes) do
-		minetest.register_node(":"..nodes[i], base_upgrade_template)
+		core.register_node(":"..nodes[i], base_upgrade_template)
 		table.insert(clear_craft_vendors, nodes[i])
 	end
 end
@@ -94,7 +94,7 @@ end
 if old_vendor_mods_table["vendor"] then
 	local nodes = {"vendor:vendor", "vendor:depositor"}
 	for i in pairs(nodes) do
-		minetest.register_node(":"..nodes[i], base_upgrade_template)
+		core.register_node(":"..nodes[i], base_upgrade_template)
 		table.insert(clear_craft_vendors, nodes[i])
 	end
 end
@@ -102,17 +102,17 @@ end
 if old_vendor_mods_table["money"] then
 	local money_template = table.copy(base_upgrade_template)
 	money_template.can_dig = function(pos, player)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local inv = meta:get_inventory()
 		return inv:is_empty("main") and
 			(meta:get_string("owner") == player:get_player_name() or
-			minetest.check_player_privs(player:get_player_name(), {protection_bypass = true}))
+			core.check_player_privs(player:get_player_name(), {protection_bypass = true}))
 	end
 	money_template.on_rightclick = function(pos, _, clicker)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		local list_name = "nodemeta:"..pos.x..","..pos.y..","..pos.z
 		if clicker:get_player_name() == meta:get_string("owner") then
-			minetest.show_formspec(clicker:get_player_name(),"fancy_vend:money_shop_formspec",
+			core.show_formspec(clicker:get_player_name(),"fancy_vend:money_shop_formspec",
 				"size[8,10;]"..
 				"list["..list_name..";main;0,0;8,4;]"..
 				"list[current_player;main;0,6;8,4;]"
@@ -121,16 +121,16 @@ if old_vendor_mods_table["money"] then
 	end
 	local nodes = {"money:barter_shop", "money:shop", "money:admin_shop", "money:admin_barter_shop"}
 	for i in pairs(nodes) do
-		minetest.register_node(":"..nodes[i], money_template)
+		core.register_node(":"..nodes[i], money_template)
 		table.insert(clear_craft_vendors, nodes[i])
 	end
 end
 
 for i_n in pairs(clear_craft_vendors) do
-	local currency_crafts = minetest.get_all_craft_recipes(i_n)
+	local currency_crafts = core.get_all_craft_recipes(i_n)
 	if currency_crafts then
 		for i in pairs(currency_crafts) do
-			minetest.clear_craft(currency_crafts[i])
+			core.clear_craft(currency_crafts[i])
 		end
 	end
 end

@@ -1,7 +1,7 @@
 
 globals = {
 	"fancy_vend",
-	"minetest",
+	"core",
 	"mail"
 }
 

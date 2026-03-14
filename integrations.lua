@@ -2,14 +2,14 @@
 -- Various email and tell mod support
 
 -- This function takes the position of a vendor and alerts the owner if it has just been emptied
-local email_loaded = minetest.get_modpath("email")
-local tell_loaded = minetest.get_modpath("tell")
-local mail_loaded = minetest.get_modpath("mail") and mail.version == 3 -- recent version only (at this time)
+local email_loaded = core.get_modpath("email")
+local tell_loaded = core.get_modpath("tell")
+local mail_loaded = core.get_modpath("mail") and mail.version == 3 -- recent version only (at this time)
 
 function fancy_vend.alert_owner_if_empty(pos)
 	if fancy_vend.no_alerts then return end
 
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local settings = fancy_vend.get_vendor_settings(pos)
 	local owner = meta:get_string("owner")
 	local alerted = fancy_vend.stb(meta:get_string("alerted") or "false")
@@ -21,7 +21,7 @@ function fancy_vend.alert_owner_if_empty(pos)
 	local stock_msg = "Your vendor trading "..
 		settings.input_item_qty.." "..input_desc..
 		" for "..settings.output_item_qty.." "..output_desc..
-		" at position "..minetest.pos_to_string(pos, 0)..
+		" at position "..core.pos_to_string(pos, 0)..
 		" has just run out of stock."
 
 	if not alerted and not status and errorcode == "no_output" then

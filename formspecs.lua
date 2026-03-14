@@ -13,7 +13,7 @@ function fancy_vend.get_vendor_buyer_fs(pos, _, lots)
 
 	-- Add dynamic elements
 	local settings = fancy_vend.get_vendor_settings(pos)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local status, errorcode = fancy_vend.get_vendor_status(pos)
 
 	local input_desc = fancy_vend.get_item_description(settings.input_item)
@@ -96,8 +96,8 @@ function fancy_vend.get_vendor_settings_fs(pos)
 		"checkbox[5,2.6;auto_sort;Automatically sort inventory.;"..fancy_vend.bts(settings.auto_sort).."]"
 
 	-- Admin vendor checkbox only if owner is admin
-	local meta = minetest.get_meta(pos)
-	if minetest.check_player_privs(meta:get_string("owner"), {admin_vendor = true}) or settings.admin_vendor then
+	local meta = core.get_meta(pos)
+	if core.check_player_privs(meta:get_string("owner"), {admin_vendor = true}) or settings.admin_vendor then
 		checkboxes = checkboxes..
 			"checkbox[5,2.2;admin_vendor;Set vendor to an admin vendor.;"..
 			fancy_vend.bts(settings.admin_vendor).."]"
@@ -105,10 +105,10 @@ function fancy_vend.get_vendor_settings_fs(pos)
 
 
 	-- Optional dependancy specific elements
-	if minetest.get_modpath("pipeworks") or minetest.get_modpath("hopper") then
+	if core.get_modpath("pipeworks") or core.get_modpath("hopper") then
 		checkboxes = checkboxes..
 			"checkbox[1,1.7;currency_eject;Eject incoming currency.;"..fancy_vend.bts(settings.currency_eject).."]"
-		if minetest.get_modpath("pipeworks") then
+		if core.get_modpath("pipeworks") then
 			checkboxes = checkboxes..
 				"checkbox[5,1.3;accept_output_only;Accept for-sale item only.;"..
 				fancy_vend.bts(settings.accept_output_only).."]"..
@@ -117,7 +117,7 @@ function fancy_vend.get_vendor_settings_fs(pos)
 		end
 	end
 
-	if minetest.get_modpath("digilines") then
+	if core.get_modpath("digilines") then
 		fields = fields..
 			"field[6.41,4.1;2.66,1;digiline_channel;Digiline Channel:;"..settings.digiline_channel.."]"..
 			"field_close_on_enter[digiline_channel;false]"
@@ -172,8 +172,8 @@ function fancy_vend.get_vendor_log_fs(pos)
 		"button_exit[0,8;1,1;btn_exit;Done]"
 
 	-- Add dynamic elements
-	local meta = minetest.get_meta(pos)
-	local logs = minetest.deserialize(meta:get_string("log"))
+	local meta = core.get_meta(pos)
+	local logs = core.deserialize(meta:get_string("log"))
 
 	local settings = fancy_vend.get_vendor_settings(pos)
 	if settings.admin_vendor then
@@ -192,8 +192,8 @@ function fancy_vend.get_vendor_log_fs(pos)
 end
 
 function fancy_vend.show_buyer_formspec(player, pos)
-	minetest.show_formspec(player:get_player_name(),
-		"fancy_vend:buyer;"..minetest.pos_to_string(pos),
+	core.show_formspec(player:get_player_name(),
+		"fancy_vend:buyer;"..core.pos_to_string(pos),
 		fancy_vend.get_vendor_buyer_fs(pos, player, nil)
 	)
 end
@@ -204,13 +204,13 @@ function fancy_vend.show_vendor_formspec(player, pos)
 		local status, errorcode = fancy_vend.get_vendor_status(pos)
 		if ((not status and errorcode == "unconfigured")
 					and fancy_vend.can_modify_vendor(pos, player)) or settings.admin_vendor then
-			minetest.show_formspec(player:get_player_name(),
-				"fancy_vend:settings;"..minetest.pos_to_string(pos),
+			core.show_formspec(player:get_player_name(),
+				"fancy_vend:settings;"..core.pos_to_string(pos),
 				fancy_vend.get_vendor_settings_fs(pos)
 			)
 		else
-			minetest.show_formspec(player:get_player_name(),
-				"fancy_vend:default;"..minetest.pos_to_string(pos),
+			core.show_formspec(player:get_player_name(),
+				"fancy_vend:default;"..core.pos_to_string(pos),
 				fancy_vend.get_vendor_default_fs(pos, player)
 			)
 		end

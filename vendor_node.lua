@@ -13,7 +13,7 @@ local vendor_template = {
 	sounds = default.node_sound_wood_defaults(),
 	drop = fancy_vend.drop_vendor,
 	on_construct = function(pos)
-		local meta = minetest.get_meta(pos)
+		local meta = core.get_meta(pos)
 		meta:set_string("infotext", "Unconfigured Player Vendor")
 		meta:set_string("message", "Vendor initialized")
 		meta:set_string("owner", "")
@@ -27,40 +27,40 @@ local vendor_template = {
 	can_dig = fancy_vend.can_dig_vendor,
 	on_place = function(itemstack, placer, pointed_thing)
 		if pointed_thing.type ~= "node" then return end
-		local pointed_node_pos = minetest.get_pointed_thing_position(pointed_thing, false)
-		local pointed_node = minetest.get_node(pointed_node_pos)
-		if minetest.registered_nodes[pointed_node.name].buildable_to then
+		local pointed_node_pos = core.get_pointed_thing_position(pointed_thing, false)
+		local pointed_node = core.get_node(pointed_node_pos)
+		if core.registered_nodes[pointed_node.name].buildable_to then
 			pointed_thing.above = pointed_node_pos
 		end
 		-- Set variables for access later (for various checks, etc.)
 		local name = placer:get_player_name()
 		local above_node_pos = table.copy(pointed_thing.above)
 		above_node_pos.y = above_node_pos.y + 1
-		local above_node = minetest.get_node(above_node_pos).name
+		local above_node = core.get_node(above_node_pos).name
 
 		-- If node above is air or the display node, and it is not protected,
 		-- attempt to place the vendor. If vendor sucessfully places, place display node above, otherwise alert the user
-		if (minetest.registered_nodes[above_node].buildable_to or
+		if (core.registered_nodes[above_node].buildable_to or
 				above_node == "fancy_vend:display_node") and
-				not minetest.is_protected(above_node_pos, name) then
+				not core.is_protected(above_node_pos, name) then
 			local success
-			itemstack, success = minetest.item_place(itemstack, placer, pointed_thing, nil)
+			itemstack, success = core.item_place(itemstack, placer, pointed_thing, nil)
 			if above_node ~= "fancy_vend:display_node" and success then
-				minetest.set_node(above_node_pos, minetest.registered_nodes["fancy_vend:display_node"])
+				core.set_node(above_node_pos, core.registered_nodes["fancy_vend:display_node"])
 			end
 			-- Set owner
-			local meta = minetest.get_meta(pointed_thing.above)
+			local meta = core.get_meta(pointed_thing.above)
 			meta:set_string("owner", placer:get_player_name() or "")
 
 			-- Set default meta
-			meta:set_string("log", minetest.serialize({"Vendor placed by "..placer:get_player_name()}))
+			meta:set_string("log", core.serialize({"Vendor placed by "..placer:get_player_name()}))
 			fancy_vend.reset_vendor_settings(pointed_thing.above)
 			fancy_vend.refresh_vendor(pointed_thing.above)
 		else
-			minetest.chat_send_player(name, "Vendors require 2 nodes of space.")
+			core.chat_send_player(name, "Vendors require 2 nodes of space.")
 		end
 
-		if minetest.get_modpath("pipeworks") then
+		if core.get_modpath("pipeworks") then
 			pipeworks.after_place(pointed_thing.above)
 		end
 
@@ -80,16 +80,16 @@ local vendor_template = {
 		-- remove the display node and continue to remove vendor,
 		-- if it doesn't exist and vendor can be dug continue to remove vendor.
 		local success
-		if minetest.get_node(above_node_pos).name == "fancy_vend:display_node" then
-			if not minetest.is_protected(above_node_pos, name) and not minetest.is_protected(pos, name) then
-				minetest.remove_node(above_node_pos)
+		if core.get_node(above_node_pos).name == "fancy_vend:display_node" then
+			if not core.is_protected(above_node_pos, name) and not core.is_protected(pos, name) then
+				core.remove_node(above_node_pos)
 				fancy_vend.remove_item(above_node_pos)
 				success = true
 			else
 				success = false
 			end
 		else
-			if not minetest.is_protected(pos, name) then
+			if not core.is_protected(pos, name) then
 				success = true
 			else
 				success = false
@@ -99,9 +99,9 @@ local vendor_template = {
 		-- If failed to remove display node, don't remove vendor. since protection
 		-- for whole vendor was checked at display removal, protection need not be re-checked
 		if success then
-			minetest.remove_node(pos)
-			minetest.handle_node_drops(pos, {fancy_vend.drop_vendor}, digger)
-			if minetest.get_modpath("pipeworks") then
+			core.remove_node(pos)
+			core.handle_node_drops(pos, {fancy_vend.drop_vendor}, digger)
+			if core.get_modpath("pipeworks") then
 				pipeworks.after_dig(pos)
 			end
 		end
@@ -110,13 +110,13 @@ local vendor_template = {
 		input_inventory = "main",
 		connect_sides = {left = 1, right = 1, back = 1, bottom = 1},
 		insert_object = function(pos, _, stack)
-			local inv = minetest.get_meta(pos):get_inventory()
+			local inv = core.get_meta(pos):get_inventory()
 			local remaining = inv:add_item("main", stack)
 			fancy_vend.refresh_vendor(pos)
 			return remaining
 		end,
 		can_insert = function(pos, _, stack)
-			local inv = minetest.get_meta(pos):get_inventory()
+			local inv = core.get_meta(pos):get_inventory()
 			local settings = fancy_vend.get_vendor_settings(pos)
 			if settings.split_stacks then
 				stack = stack:peek_item(1)
@@ -141,7 +141,7 @@ local vendor_template = {
 			return 0
 		end
 		if listname == "wanted_item" or listname == "given_item" then
-			local inv = minetest.get_meta(pos):get_inventory()
+			local inv = core.get_meta(pos):get_inventory()
 			inv:set_stack(listname, index, ItemStack(stack:get_name()))
 			local settings = fancy_vend.get_vendor_settings(pos)
 			if listname == "wanted_item" then
@@ -159,7 +159,7 @@ local vendor_template = {
 			return 0
 		end
 		if listname == "wanted_item" or listname == "given_item" then
-			local inv = minetest.get_meta(pos):get_inventory()
+			local inv = core.get_meta(pos):get_inventory()
 			local fake_stack = inv:get_stack(listname, index)
 			fake_stack:take_item(stack:get_count())
 			inv:set_stack(listname, index, fake_stack)
@@ -175,24 +175,24 @@ local vendor_template = {
 		return stack:get_count()
 	end,
 	on_rightclick = function(pos, _, clicker)
-		if minetest.get_node(pos).name == "fancy_vend:display_node" then
+		if core.get_node(pos).name == "fancy_vend:display_node" then
 			pos.y = pos.y - 1
 		end
 		fancy_vend.show_vendor_formspec(clicker, pos)
 	end,
 	on_metadata_inventory_move = function(pos, _, _, _, _, _, player)
-		minetest.log("action", player:get_player_name()..
-				" moves stuff in vendor at "..minetest.pos_to_string(pos))
+		core.log("action", player:get_player_name()..
+				" moves stuff in vendor at "..core.pos_to_string(pos))
 		fancy_vend.refresh_vendor(pos)
 	end,
 	on_metadata_inventory_put = function(pos, _, _, stack, player)
-		minetest.log("action", player:get_player_name().." moves "..
-				stack:get_name().." to vendor at "..minetest.pos_to_string(pos))
+		core.log("action", player:get_player_name().." moves "..
+				stack:get_name().." to vendor at "..core.pos_to_string(pos))
 		fancy_vend.refresh_vendor(pos)
 	end,
 	on_metadata_inventory_take = function(pos, _, _, stack, player)
-		minetest.log("action", player:get_player_name().." takes "..
-				stack:get_name().." from vendor at "..minetest.pos_to_string(pos))
+		core.log("action", player:get_player_name().." takes "..
+				stack:get_name().." from vendor at "..core.pos_to_string(pos))
 		fancy_vend.refresh_vendor(pos)
 	end,
 	on_blast = function()
@@ -216,7 +216,7 @@ player_vendor.tiles = {
 	"player_vend.png", "player_vend.png",
 	"player_vend.png", "player_vend_front.png",
 }
-minetest.register_node("fancy_vend:player_vendor", player_vendor)
+core.register_node("fancy_vend:player_vendor", player_vendor)
 
 
 local player_depo = table.copy(vendor_template)
@@ -226,7 +226,7 @@ player_depo.tiles = {
 	"player_depo.png", "player_depo_front.png",
 }
 player_depo.groups.not_in_creative_inventory = 1
-minetest.register_node("fancy_vend:player_depo", player_depo)
+core.register_node("fancy_vend:player_depo", player_depo)
 
 
 local admin_vendor = table.copy(vendor_template)
@@ -236,7 +236,7 @@ admin_vendor.tiles = {
 	"admin_vend.png", "admin_vend_front.png",
 }
 admin_vendor.groups.not_in_creative_inventory = 1
-minetest.register_node("fancy_vend:admin_vendor", admin_vendor)
+core.register_node("fancy_vend:admin_vendor", admin_vendor)
 
 
 local admin_depo = table.copy(vendor_template)
@@ -246,10 +246,10 @@ admin_depo.tiles = {
 	"admin_depo.png", "admin_depo_front.png",
 }
 admin_depo.groups.not_in_creative_inventory = 1
-minetest.register_node("fancy_vend:admin_depo", admin_depo)
+core.register_node("fancy_vend:admin_depo", admin_depo)
 
 
-minetest.register_craft({
+core.register_craft({
 	output = "fancy_vend:player_vendor",
 	recipe = {
 		{ "default:gold_ingot", fancy_vend.display_node, "default:gold_ingot"},
@@ -260,7 +260,7 @@ minetest.register_craft({
 
 
 -- Hopper support
-if minetest.get_modpath("hopper") then
+if core.get_modpath("hopper") then
 	hopper:add_container({
 		{"side", "fancy_vend:player_vendor", "main"}
 	})

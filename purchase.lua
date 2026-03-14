@@ -6,7 +6,7 @@ function fancy_vend.make_purchase(pos, player, lots)
 	end
 
 	local settings = fancy_vend.get_vendor_settings(pos)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local inv = meta:get_inventory()
 	local player_inv = player:get_inventory()
 	local status, errorcode = fancy_vend.get_vendor_status(pos)
@@ -26,10 +26,10 @@ function fancy_vend.make_purchase(pos, player, lots)
 		if ct.player_has then
 			if ct.player_fits then
 				if settings.admin_vendor then
-					minetest.log("action", player:get_player_name().." trades "..
+					core.log("action", player:get_player_name().." trades "..
 						settings.input_item_qty.." "..settings.input_item.." for "..
 						settings.output_item_qty.." "..settings.output_item..
-						" using vendor at "..minetest.pos_to_string(pos)
+						" using vendor at "..core.pos_to_string(pos)
 					)
 
 					fancy_vend.inv_remove(player_inv, "main",
@@ -43,10 +43,10 @@ function fancy_vend.make_purchase(pos, player, lots)
 
 				elseif ct.vendor_has then
 					if ct.vendor_fits then
-						minetest.log("action", player:get_player_name().." trades "..
+						core.log("action", player:get_player_name().." trades "..
 							settings.input_item_qty.." "..settings.input_item.." for "..
 							settings.output_item_qty.." "..settings.output_item..
-							" using vendor at "..minetest.pos_to_string(pos)
+							" using vendor at "..core.pos_to_string(pos)
 						)
 
 						fancy_vend.inv_remove(inv, "main",
@@ -60,7 +60,7 @@ function fancy_vend.make_purchase(pos, player, lots)
 						)
 						fancy_vend.inv_insert(inv, "main",
 							ItemStack(settings.input_item), input_qty, ct.player_item_table,
-							pos, (minetest.get_modpath("pipeworks") and settings.currency_eject)
+							pos, (core.get_modpath("pipeworks") and settings.currency_eject)
 						)
 
 						-- Run mail mod checks

@@ -22,7 +22,7 @@ end
 
 function fancy_vend.get_vendor_status(pos)
 	local settings = fancy_vend.get_vendor_settings(pos)
-	local meta = minetest.get_meta(pos)
+	local meta = core.get_meta(pos)
 	local inv = meta:get_inventory()
 	if fancy_vend.all_inactive_force then
 		return false, "all_inactive_force"
@@ -30,7 +30,7 @@ function fancy_vend.get_vendor_status(pos)
 		return false, "unconfigured"
 	elseif settings.inactive_force then
 		return false, "inactive_force"
-	elseif not minetest.check_player_privs(meta:get_string("owner"), {admin_vendor = true}) and
+	elseif not core.check_player_privs(meta:get_string("owner"), {admin_vendor = true}) and
 		settings.admin_vendor == true then
 		return false, "no_privs"
 	elseif not fancy_vend.inv_contains_items(
@@ -65,7 +65,7 @@ end
 
 function fancy_vend.get_item_description(itemname)
 	local desc = itemname
-	local def = minetest.registered_items[itemname]
+	local def = core.registered_items[itemname]
 	if def and def.description ~= "" then
 		desc = def.description
 	end
