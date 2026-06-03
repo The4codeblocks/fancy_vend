@@ -40,6 +40,8 @@ function fancy_vend.get_vendor_status(pos)
 	elseif not fancy_vend.free_slots(inv, "main", settings.input_item, settings.input_item_qty) and
 		not settings.admin_vendor then
 		return false, "no_room"
+	elseif not (core.registered_items[settings.input_item] and core.registered_items[settings.input_item]) then
+		return false, "invalid_item"
 	else
 		return true
 	end
@@ -59,6 +61,8 @@ function fancy_vend.make_inactive_string(errorcode)
 		status_str = status_str.." (seller has insufficient privilages)"
 	elseif errorcode == "all_inactive_force" then
 		status_str = status_str.." (all vendors disabled temporarily by admin)"
+	elseif errorcode == "invalid_item" then
+		status_str = status_str.." (invalid item exchanged)"
 	end
 	return status_str
 end
