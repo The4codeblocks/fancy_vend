@@ -36,6 +36,12 @@ function fancy_vend.is_vendor(name)
 	return false
 end
 
+function make_trade_text(settings)
+	local input_desc = fancy_vend.get_item_description(settings.input_item)
+	local output_desc = fancy_vend.get_item_description(settings.output_item)
+	return (" trading %d %s for %d %s"):format(settings.input_item_qty, input_desc, settings.output_item_qty, output_desc)
+end
+
 function fancy_vend.refresh_vendor(pos)
 	local node = core.get_node(pos)
 	if node.name:split(":")[1] ~= "fancy_vend" then
@@ -52,12 +58,8 @@ function fancy_vend.refresh_vendor(pos)
 	end
 
 	if status then
-		local input_desc = fancy_vend.get_item_description(settings.input_item)
-		local output_desc = fancy_vend.get_item_description(settings.output_item)
-
 		meta:set_string("infotext", (settings.admin_vendor and "Admin" or "Player")..
-			" Vendor trading "..settings.input_item_qty.." "..input_desc..
-			" for "..settings.output_item_qty.." "..output_desc..
+			" Vendor"..make_trade_text(settings)..
 			" (owned by "..meta:get_string("owner")..")"
 		)
 
@@ -115,7 +117,7 @@ function fancy_vend.refresh_vendor(pos)
 	else
 		meta:set_string("infotext", "Inactive "..
 			(settings.admin_vendor and "Admin" or "Player")..
-			" Vendor"..fancy_vend.make_inactive_string(errorcode)..
+			" Vendor"..(errorcode == "unconfigured" and "" or make_trade_text(settings))..fancy_vend.make_inactive_string(errorcode)..
 			" (owned by "..meta:get_string("owner")..")"
 		)
 		if meta:get_string("item") ~= "fancy_vend:inactive" then
