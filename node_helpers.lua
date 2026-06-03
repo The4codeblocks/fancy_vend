@@ -36,7 +36,7 @@ function fancy_vend.is_vendor(name)
 	return false
 end
 
-function make_trade_text(settings)
+local function make_trade_text(settings)
 	local input_desc = fancy_vend.get_item_description(settings.input_item)
 	local output_desc = fancy_vend.get_item_description(settings.output_item)
 	return (" trading %d %s for %d %s"):format(settings.input_item_qty, input_desc, settings.output_item_qty, output_desc)
@@ -117,7 +117,8 @@ function fancy_vend.refresh_vendor(pos)
 	else
 		meta:set_string("infotext", "Inactive "..
 			(settings.admin_vendor and "Admin" or "Player")..
-			" Vendor"..(errorcode == "unconfigured" and "" or make_trade_text(settings))..fancy_vend.make_inactive_string(errorcode)..
+			" Vendor"..(errorcode == "unconfigured" and "" or
+				make_trade_text(settings))..fancy_vend.make_inactive_string(errorcode)..
 			" (owned by "..meta:get_string("owner")..")"
 		)
 		if meta:get_string("item") ~= "fancy_vend:inactive" then
